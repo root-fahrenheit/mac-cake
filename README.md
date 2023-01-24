@@ -1,7 +1,7 @@
 # mac-cake
 
 Hello, this is my first python project, Mac Address Changer.
-I just started learning Python with Atil Samancioglu's course on the Udemy platform.
+I just started learning Python.
 
 In order to use the program, you need to download the getmac library;
 
