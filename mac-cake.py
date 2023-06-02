@@ -1,5 +1,6 @@
 import subprocess
 import random
+import time
 
 
 print("""
@@ -13,6 +14,8 @@ print("""
 
 
 print(        Fahrenheit)
+
+
 
 
 
@@ -54,7 +57,15 @@ def main():
                 break
             else:
                 interface = interfaces[index]
-                change_mac(interface)
+                print("MAC address of", interface, "will be automatically changed every 5 seconds.")
+                print("Press Ctrl+C to stop.")
+                try:
+                    while True:
+                        change_mac(interface)
+                        time.sleep(5)
+                except KeyboardInterrupt:
+                    print("\nStopped automatic MAC address changing.")
+                    break
         else:
             print("Invalid choice!")
 
