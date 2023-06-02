@@ -1,7 +1,6 @@
 import subprocess
-from getmac import get_mac_address as gma
-import sys, time, os
 import random
+
 
 print("""
               #    #   ##    ####         ####    ##   #    # ###### 
@@ -13,147 +12,54 @@ print("""
 """)
 
 
-
-
-
-message = "                github.com/root-fahrenheit\n\n\n"
-
-for char in message:
-    sys.stdout.write(char)
-    sys.stdout.flush()
-    time.sleep(0.03)
-
-time.sleep(0.5)
-
-
-class Format:
-    end = '\033[0m'
-    underline = '\033[4m'
-
-
-
-print("                     Your MAC Address: "  + gma())
-
-time.sleep(1)
-
-print("""
-                      [c*]=========Fahrenheit========[c*]
-                      |   github.com/root-fahrenheit/   |
-                      |     Welcome to MAC-Cake so      |
-                      |        my first project.        |
-                      |          My teacher is          |
-                      |        Atil Samancioglu.        |
-                      |        on Udemy platform.       |
-                      |=================================| """)
-
-
-print("""
-                       1) Select your interface
-
-                       2) Quit\n\n
-""")
+print(        Fahrenheit)
 
 
 
 
-def random_mac():
-    characters = "0123456789abcdef"
-    random_mac_address = "00"
-    for i in range(5):
-        random_mac_address += ":" + \
-                              random.choice(characters) \
-                              + random.choice(characters)
-    return random_mac_address
+def change_mac(interface):
+    random_mac = [random.choice('0123456789abcdef') for _ in range(6)]
+    new_mac = ":".join(random_mac)
 
+    try:
+        subprocess.check_call(['ifconfig', interface, 'down'])
+        subprocess.check_call(['ifconfig', interface, 'hw', 'ether', new_mac])
+        subprocess.check_call(['ifconfig', interface, 'up'])
+        print("MAC address of", interface, "changed to", new_mac)
+    except subprocess.CalledProcessError:
+        print("Error: Failed to change MAC address of", interface)
 
-def clearscr():
-    os.system('clear')
+def get_interfaces():
+    interfaces = subprocess.check_output(['ifconfig', '-a']).decode('utf-8')
+    interfaces = interfaces.split('\n\n')
+    interfaces = [i.split()[0] for i in interfaces if i and not i.startswith('lo')]
+    return interfaces
 
+def print_interfaces(interfaces):
+    print("Available interfaces:")
+    for index, interface in enumerate(interfaces, start=1):
+        print(f"{index}) {interface}")
+    print(f"{len(interfaces)+1}) Quit")
 
-def changer():
-    clearscr()
-    print("""
-                  #    #   ##    ####         ####    ##   #    # ###### 
-                  ##  ##  #  #  #    #       #    #  #  #  #   #  #      
-                  # ## # #    # #      ##### #      #    # ####   #####  
-                  #    # ###### #            #      ###### #  #   #      
-                  #    # #    # #    #       #    # #    # #   #  #      
-                  #    # #    #  ####         ####  #    # #    # ######
-    """)
-    print("""\n\n
-                                    1) eth0
-                           
-                                    2) eth1
-                           
-                                    3) wlan0
-                           
-                                    4) wlan1
+def main():
+    interfaces = get_interfaces()
+    print_interfaces(interfaces)
 
-                                    5) Quit\n\n""")
-
-
-    y_loop = 0
-
-    choice_one = "1"
-    choice_two = "2"
-    choice_three = "3"
-    choice_four = "4"
-    choice_five = "5"
-    while y_loop == 0:
-        userchoice2 = str(input(Format.underline + "Select -->" + Format.end))
-        if userchoice2 == choice_one:
-            y_loop += 1
-            subprocess.call(["ifconfig", "eth0", "down"])
-            subprocess.call(["ifconfig", "eth0", "hw", "ether", random_mac()])
-            subprocess.call(["ifconfig", "eth0", "up"])
-            print("Your MAC Address: " + gma())
-            quit()
-        elif userchoice2 == choice_two:
-            y_loop += 1
-            subprocess.call(["ifconfig", "eth1", "down"])
-            subprocess.call(["ifconfig", "eth1", "hw", "ether", random_mac()])
-            subprocess.call(["ifconfig", "eth1", "up"])
-            print("Your MAC Address: " + gma())
-            quit()
-        elif userchoice2 == choice_three:
-            subprocess.call(["ifconfig", "wlan0", "down"])
-            subprocess.call(["ifconfig", "wlan0", "hw", "ether", random_mac()])
-            subprocess.call(["ifconfig", "wlan0", "up"])
-            print("Your MAC Address: " + gma())
-            quit()
-        elif userchoice2 == choice_four:
-            y_loop += 1
-            subprocess.call(["ifconfig", "wlan1", "down"])
-            subprocess.call(["ifconfig", "wlan1", "hw", "ether", random_mac()])
-            subprocess.call(["ifconfig", "wlan1", "up"])
-            print("Your MAC Address: " + gma())
-            quit()
-        elif userchoice2 == choice_five:
-            y_loop += 1
-            print("Quitting")
-            time.sleep(1)
-            quit()
+    while True:
+        choice = input("Select an interface: ")
+        if choice.isdigit() and int(choice) in range(1, len(interfaces)+2):
+            index = int(choice) - 1
+            if index == len(interfaces):
+                print("Quitting...")
+                break
+            else:
+                interface = interfaces[index]
+                change_mac(interface)
         else:
-            continue
+            print("Invalid choice!")
 
-x_loop = 0
-choice1 = "1"
-choice2 = "2"
-while x_loop == 0:
-    userchoice = str(input(Format.underline + "--> Which? 1 , 2: " + Format.end))
-    if userchoice == choice1:
-        x_loop += 1
-        changer()
-        break
-    elif userchoice == choice2:
-        x_loop += 1
-        quit()
-        break
-    else:
-        continue
-
-
-
+if __name__ == "__main__":
+    main()
 
 
 
